@@ -31,6 +31,7 @@ Comparison based sorts (best case limit is O(n lg n)):
 - [ ] Quick sort: avg runtime: O(n lg n) under the assumption that elements are randomized/shuffled and that they are mostly unique/few duplicates, if not then you will get worst runtime: O(n^2), aux mem: O(lg n), stable: no, in-place: yes (even though it has rec call stacks).
 - [ ] There is a variant of quicksort (quick3) that is great for data with many duplicates.
 - [ ] Heap sort: avg/worst runtime: O(n lg n), aux mem: O(1). stable?
+- [ ] Timsort: ???
 
 Non-Comparison based sorts:
 - [ ] Counting sort:
