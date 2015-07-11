@@ -1,17 +1,20 @@
 # GraphAlgorithmsAndDataStructures-python
 Typical data structures and algorithms implemented in python.
 
+Python built-ins: Lists, Dicts, Sets.
+
 Data structures:
-- [ ] LinkedList: lists are built-in to python.
-- [ ] Stack: add to "top" of stack, remove from "top" of stack.
-- [ ] Queue: add to "back" of queue, remove from "front" of queue.
+- [ ] LinkedList: TODO: add(), remove().
+- [x] Stack: add to "top" of stack, remove from "top" of stack.
+- [x] Queue: add to "back" of queue, remove from "front" of queue.
+- [ ] Deque: a "double-ended queue" (i.e. and queue that you can push/pop from both the "front" and "back").
 - [ ] Priority Queue (Heap): minimum (minheap) is on top, everything else is greater in value below.
-[ ] Fibonacci Heaps are more efficent in theory, but are complicated to implement, so they are used in real life.
+- [ ] Fibonacci Heaps are more efficent in theory, but are complicated to implement, so they are used in real life.
 
 Trees (special case of graphs):
-- [ ] Binary tree:
+- [x] Binary tree:
 - [ ] d-ary tree: more general case of binary tree with d children instead of just 2 children.
-[ ] Binary search tree (BST): binary tree with property that leftchild.data < curr.data < rightchild.data throughout tree.
+- [ ] Binary search tree (BST): binary tree with property that leftchild.data < curr.data < rightchild.data throughout tree.
 
 Self-balancing trees:
 - [ ] B-tree: sort of like a self-balancing BST.
@@ -38,6 +41,8 @@ Non-Comparison based sorts:
 - [ ] Bucket sort: avg runtime: O(n+k), worst O(n^2), aux mem: O(n).
 - [ ] MSD radix sort: avg/worst runtime: O(nk) where n is # of bits/digits starting with most signif digit. aux mem: O(n+k), stable: yes, in-place: no.
 - [ ] LSD radix sort: like MSD but starting from least signif digit, stable: yes, in-place: no.
+
+- [x] Graph representations
 
 Unweighted (all edges have implicited same weight), Undirected Graph:
 - [ ] Depth first search (DFS):
