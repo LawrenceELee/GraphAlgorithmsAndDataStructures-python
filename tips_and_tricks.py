@@ -1,7 +1,17 @@
 '''
-Demos of tips and tricks using python syntax.
+Demos of tips, tricks, and other gotchas writing python code.
+
+* Python doesn't have tail-call recursion optimiaztion (TCO), so recursive call
+  stacks grow linearly with input size even when you can repeated do the
+  calculation on the last stack frame. Guido explicitly specific this so that
+  you can see full stack traces.
 
 '''
+
+#max positive (for python3) int val can be found out by:
+import sys
+print("max positive int value on this system:", sys.maxsize)
+print(2 ** 65) #python3 internaly auto promotes int to long when int overflows.
 
 
 '''
@@ -57,9 +67,23 @@ seperate above and below examples
 ==================================================
 '''
 
+'''
+append() vs extend()
+src: http://stackoverflow.com/questions/252703/python-append-vs-extend
+'''
+#append: Appends object at end
+x = [1, 2, 3]
+x.append([4, 5])
+print(x)        #gives you: [1, 2, 3, [4, 5]]
+
+#extend: extends list by appending elements from the iterable
+x = [1, 2, 3]
+x.extend([4, 5])
+print(x)        #gives you: [1, 2, 3, 4, 5]
+
 
 '''
-extend() a list is more efficient (fast) than append()
+furthermore, extend() a list is more efficient (fast) than append()
 since strings are immutable (can't be changed one they are created,
 this is analogous to the String() & '+' vs StringBuilder() in Java.
 even though lists are mutable, they behave like immutable when appending.
@@ -98,5 +122,123 @@ results = sum(my_list, [])  #same as sum(my_str, '') == sum(my_strs, ''.join())
 #how efficient is list comprehension?
 [[j for j in range(5)] for i in range(10)]
 #is it just 2 nested for loops?
-#are here some optimziations?
+#are there some optimziations under the hood?
 #how well does it scale?
+
+'''
+#for-loop syntactic sugar:
+for x in ..a..:
+    ..code..
+
+#turns into
+
+my_iter = iter(..a..)
+while (my_iter is not empty):
+    x = my_iter.next()
+    ..code..
+'''
+
+
+'''
+==================================================
+seperate above and below examples
+==================================================
+'''
+
+'''
+creating own iterable class
+src: https://wiki.python.org/moin/ForLoop
+'''
+
+class Iterable(object):
+    def __init__(self,values):
+        self.values = values
+        self.location = 0
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        if self.location == len(self.values): raise StopIteration
+
+        value = self.values[self.location]
+        self.location += 1
+        return value
+
+'''
+creating (inefficent) range generator from scratch.
+python's range() under the hood is MUCH MUCH more efficient. allowing for
+constant 'memebership check' runtime regardless of the size of input.
+(i.e. '99 in range(100)' is as fast as '99999999 in range(1000000000)')
+further reading:
+http://stackoverflow.com/questions/30081275/why-is-1000000000000000-in-range1000000000000001-so-fast-in-python-3
+http://stackoverflow.com/questions/102535/what-can-you-use-python-generator-functions-for
+
+this is because range() isn't a generator it is a sequence obj like list obj.
+the difference between a range and a list is that a range is a LAZY or DYNAMIC sequence; it DOESN'T REMEMBER ALL OF ITS VALUES, it just remembers its start, stop, and step, and creates the values on demand on __getitem__.
+'''
+import timeit
+def my_inefficent_range(start, end, step=1):
+    while start <= end:
+        yield start     #yield keyword is the thing that makes it generator.
+        start += step
+
+#for functions you define, you can pass setup parameter.
+time_own = timeit.timeit("10 in my_inefficent_range(0, 11)", setup="from __main__ import my_inefficent_range")
+time_python = timeit.timeit("10 in range(0, 11)")
+print("own:", time_own, "python:", time_python)
+time_own = timeit.timeit("100 in my_inefficent_range(0, 101)", setup="from __main__ import my_inefficent_range")
+time_python = timeit.timeit("100 in range(0, 101)")
+print("own:", time_own, "python:", time_python)
+print("time_python (checking if element in range object) should be about CONSTANT same time even though 10x increase in input size, time_own (using for-loop and yield) should be LINEAR with input size.\n")
+#runtimes: note that checking membership is near constant with python's range()
+#and LINEAR with your own inefficient range function.
+#own: 3.2441859245300293 python: 0.8330478668212891
+#own: 25.80547595024109 python: 0.8650491237640381
+
+
+
+#this is the wrong approach, we don't have want to have to iterate over
+#all the elements. if we do then runtime is linear with input size regardless
+#of how fast we can check memebership in range()/my_range().
+#as implied by the timing data.
+#time_own = timeit.timeit("for x in my_inefficent_range(1, 100): pass", setup="from __main__ import my_inefficent_range")
+#time_python = timeit.timeit("for x in range(1, 100): pass")
+#print("own:", time_own, "python:", time_python)
+#print("both time_python and time_own should iterate 'for x in range(): pass' at linear with input size")
+#run1
+#own: 2.7101550102233887 python: 0.9570538997650146
+#own: 22.949312925338745 python: 3.2081828117370605
+#own: 243.6319351196289 python: 44.67555594444275
+#run2
+#own: 2.855163097381592 python: 0.8890509605407715
+#own: 23.555346965789795 python: 3.5112011432647705
+#own: 236.8995499610901 python: 45.933626890182495
+
+
+
+#calling/invoking fucntions my_inefficent_range() and range() are constant.
+time_own = timeit.timeit("my_inefficent_range(0, 101)", setup="from __main__ import my_inefficent_range")
+time_python = timeit.timeit("range(0, 101)")
+print("own:", time_own, "python:", time_python)
+print("calling/invoking fucntions my_inefficent_range() and range() are constant.\n")
+#runtimes
+#own: 0.5690329074859619 python: 0.6820387840270996
+#own: 0.5380301475524902 python: 0.6560380458831787
+#own: 0.6080348491668701 python: 0.8090457916259766
+
+
+
+
+
+'''
+==================================================
+seperate above and below examples
+==================================================
+'''
+
+'''
+what is metaclass?
+more info:
+    stackoverflow.com/questions/100003/what-is-a-metaclass-in-python
+'''
