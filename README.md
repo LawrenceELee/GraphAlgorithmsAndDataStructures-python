@@ -7,7 +7,7 @@ Data structures:
 - [ ] LinkedList: TODO: add(), remove().
 - [x] Stack: add to "top" of stack, remove from "top" of stack.
 - [x] Queue: add to "back" of queue, remove from "front" of queue.
-- [ ] Deque: a "double-ended queue" (i.e. and queue that you can push/pop from both the "front" and "back").
+- [ ] Deque: a "double-ended queue" aka circular buffer (i.e. and queue that you can push/pop from both the "front" and "back"). It is implemented in the python collections library.
 - [ ] Priority Queue (Heap): minimum (minheap) is on top, everything else is greater in value below.
 - [ ] Fibonacci Heaps are more efficent in theory, but are complicated to implement, so they are used in real life.
 
