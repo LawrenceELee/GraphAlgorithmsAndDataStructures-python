@@ -77,6 +77,148 @@ graph3 = {      #dict of string keys and set values
     'h': set('fg')
 }
 
+
+def bfs(G, s):
+    '''
+    BFS written pure and minimal python to demo the alg not the language.
+
+    Only iterative, no recursive version of BFS.
+
+    This alg will start at node s and explore all nodes in the entire
+    graph, marking down what node we used to reach the current node.
+    Using edge_to we can reconstruct the path from s to any node.
+
+    Since BFS solves the shorest path for unweighted graphs, we keep
+    track of "edge_to" of node v so that we can reconstruct path from
+    s to t.
+
+    @type G: list of lists, list of sets, dict of sets
+    @param G: the graph we are exploring.
+
+    @type s: string, variable name
+    @param s: source/starting node.
+
+    @rtype: list
+    @return: list each of the node's predecessor for path starting at s.
+    '''
+
+    #visited = []   #don't need this, since edge_to is dynamically resized we can just check for existance to see if we visited node or not.
+    edge_to = {s: None}     #list of predecessors (mark  how we got to node x.)
+    que = deque([s])        #queue of nodes we still need to explore.
+
+    while que:
+        x = que.popleft()                   
+        for y in G[x]:                      #explore all neighbors of node u.
+            if y in edge_to:    continue    #already visited/explore, so skip.
+            edge_to[y] = x                  #record that got to v from u.
+            que.append(y) #queue every unvisited neighbor.
+    return edge_to
+def test_bfs():
+    print("running test_bfs()...")
+    print("h -> d:", find_path(graph3, bfs, 'h', 'd')) #graph3, call with strs.
+    print("h -> d:", find_path(graph1, bfs, h, d)) #graph1, call with var names.
+    print("a -> h:", find_path(graph3, bfs, 'a', 'h'))
+    print("h -> a:", find_path(graph3, bfs, 'h', 'a'))  #no path.
+
+
+def dfs_iterative(G, s):
+    '''
+    DFS written pure and minimal python to demo the alg not the language.
+
+    Iterative recursive version.
+
+    This alg will start at node s and explore all nodes in the entire
+    graph, marking down what node we used to reach the current node.
+    Using edge_to we can reconstruct the path from s to any node.
+
+    We can use DFS to create a pre and post order of the nodes starting from
+    source node.
+
+    DFS DOES NOT solve shortest path for unweighted graphs, but we
+    can still use it to find A PATH from s to t from the edge_to list.
+
+    @type G: list of lists, list of sets, dict of sets
+    @param G: the graph we are exploring.
+
+    @type s: string, variable name
+    @param s: source/starting node.
+
+    @rtype: list
+    @return: list each of the node's predecessor for path starting at s.
+    '''
+    #visited = []   #don't need this, since edge_to is dynamically resized we can just check for existance to see if we visited node or not.
+    edge_to = {s: None}     #list of predecessors (mark  how we got to node x.)
+    stk = [s]               #use list as stack of nodes we need to explore.
+
+    while stk:
+        x = stk.pop()
+        for y in G[x]:
+            if y in edge_to:    continue    #visited, so skip.
+            edge_to[y] = x
+            stk.append(y)                   #push v onto stack.
+    return edge_to
+
+def test_dfs_iterative():
+    print("running test_dfs_iterative()...")
+    print("h -> d:", find_path(graph3, dfs_iterative, 'h', 'd'))
+    print("h -> d:", find_path(graph1, dfs_iterative, h, d))
+    print("a -> h:", find_path(graph3, dfs_iterative, 'a', 'h'))
+    print("h -> a:", find_path(graph3, dfs_iterative, 'h', 'a'))    #no path.
+
+def dfs_recursive(G, s):
+    '''
+    For recursive version, you need a seperate "visited" list.
+    '''
+    edge_to = {s: None}
+    visited = []
+    _dfs_recursive(G, s, visited, edge_to)
+    return edge_to
+def _dfs_recursive(G, x, visited, edge_to):
+    visited.append(x)                   #mark as visited
+    for y in G[x]:
+        if y in visited:    continue    #visited, so skip.
+        edge_to[y] = x
+        _dfs_recursive(G, y, visited, edge_to)  #recursive call.
+def test_dfs_recursive():
+    print("running test_dfs_recursive()...")
+    print("h -> d:", find_path(graph3, dfs_recursive, 'h', 'd'))
+    print("h -> d:", find_path(graph1, dfs_recursive, h, d))
+    print("a -> h:", find_path(graph3, dfs_recursive, 'a', 'h'))
+    print("h -> a:", find_path(graph3, dfs_recursive, 'h', 'a'))    #no path.
+            
+            
+
+def find_path(G, trav_alg, s, t):
+    '''
+    Used by both DFS and BFS to trace path from source to target.
+    TODO: make it a query so that it doesn't have to run trav_alg every
+    time. Just run the alg once, and allow for repeated queries.
+
+    @type G: list of lists, list of sets, dict of sets
+    @param G: the graph we are exploring.
+
+    @type s: string, variable name
+    @param s: source/starting node.
+
+    @rtype: list
+    @return: list each of the node's predecessor for path starting at s.
+    '''
+    x = t                           #x is a "dummy variable"
+    path = [x]
+    edge_to = trav_alg(G, s)                #explore graph.
+    try:
+        while edge_to[x] is not None:   #walk backwards from t to s.
+            path.append(edge_to[x])
+            x = edge_to[x]
+    except KeyError:
+        return "No path from %s to %s" % (s, t)
+    path.reverse()  #reverse() is in-place, can't return path.reverse().
+    return tuple(path)
+
+
+
+
+
 '''
 The 3 below graph algs are slightly buggy. They are only examples used for
 comparison and reference.
@@ -122,96 +264,14 @@ def test_iterative_bfs():
 
 
 
-def bfs(G, s):
-    '''
-    BFS written pure and minimal python to demo the alg not the language.
-
-    Only iterative, no recursive version of BFS.
-
-    This alg will start at node s and explore all nodes in the entire
-    graph, marking down what node we used to reach the current node.
-    Using edge_to we can reconstruct the path from s to any node.
-
-    Since BFS solves the shorest path for unweighted graphs, we keep
-    track of "edge_to" of node v so that we can reconstruct path from
-    s to t.
-
-    @type G: list of lists, list of sets, dict of sets
-    @param G: the graph we are exploring.
-
-    @type s: string, variable name
-    @param s: source/starting node.
-
-    @rtype: list
-    @return: list each of the node's predecessor for path starting at s.
-    '''
-
-    #visited = []   #don't need this, since edge_to is dynamically resized we can just check for existance to see if we visited node or not.
-    edge_to = {s: None}     #list of predecessors (mark  how we got to node x.)
-    que = deque([s])        #queue of nodes we still need to explore.
-
-    while que:
-        u = que.popleft()                   
-        for v in G[u]:                      #explore all neighbors of node u.
-            if v in edge_to:    continue    #already visited/explore, so skip.
-            edge_to[v] = u                  #record that got to v from u.
-            que.append(v) #queue every unvisited neighbor.
-    return edge_to 
-
-def dfs_iterative(G, s):
-    '''
-    '''
-    #visited = []   #don't need this, since edge_to is dynamically resized we can just check for existance to see if we visited node or not.
-    edge_to = {s: None}     #list of predecessors (mark  how we got to node x.)
-    que = [s]               #use list as stack of nodes we need to explore.
-
-
-def find_path(G, trav_alg, s, t):
-    '''
-    Used by both DFS and BFS to trace path from source to target.
-    TODO: make it a query so that it doesn't have to run trav_alg every
-    time. Just run the alg once, and allow for repeated queries.
-
-    @type G: list of lists, list of sets, dict of sets
-    @param G: the graph we are exploring.
-
-    @type s: string, variable name
-    @param s: source/starting node.
-
-    @rtype: list
-    @return: list each of the node's predecessor for path starting at s.
-    '''
-    x = t                           #x is a "dummy variable"
-    path = [x]
-    edge_to = trav_alg(G, s)                #explore graph.
-    try:
-        while edge_to[x] is not None:   #walk backwards from t to s.
-            path.append(edge_to[x])
-            x = edge_to[x]
-    except KeyError:
-        return "No path from %s to %s" % (s, t)
-    path.reverse()  #reverse() is in-place, can't return path.reverse().
-    return tuple(path)
-
-def test_bfs():
-    print("running test_bfs()...")
-    print(find_path(graph3, bfs, 'h', 'd')) #for graph3, call with strings.
-    print(find_path(graph1, bfs, h, d)) #for graph1, call with variable names.
-    print(find_path(graph3, bfs, 'a', 'h'))
-    print(find_path(graph3, bfs, 'h', 'a'))  #no path.
-
-
-
-
-
-
 def main():
-    #test_dfs_iterative()
-    test_recursive_dfs()    #a little buggy, path has extra nodes.
-    test_iterative_dfs()    #a little buggy, path has extra nodes.
-    test_iterative_bfs()    #a little buggy, path has extra nodes.
     test_bfs()
+    test_dfs_iterative()
+    test_dfs_recursive()
 
+    #test_recursive_dfs()   #a little buggy, path has extra nodes.
+    #test_iterative_dfs()   #a little buggy, path has extra nodes.
+    #test_iterative_bfs()   #a little buggy, path has extra nodes.
 
 if __name__ == "__main__":
     main()
