@@ -12,10 +12,11 @@ class Queue(list):
     enqueue = list.append
 
     def dequeue(self):
-        #pop (return and remove) element at idx 0.
-        return self.pop(0)  #by default pop() removes last element.
-        #don't want my_list.remove(element) will see if element is in
-        #list and remove it.
+        try:
+            return self.pop(0)  #returns the 1st elmt and removes it from list.
+        #don't want remove(elmt) b/c it will search for elmt and list and del it
+        except:
+            pass        #quietly do nothing if no more elmnts to pop.
 
     def is_empty(self):
         '''
@@ -24,8 +25,8 @@ class Queue(list):
         '''
         if self.__len__() <= 0:     #same as len(self) == 0
             return True
-        else:
-            return False
+        #else is optional, more efficent without the else clause?
+        return False
 
 def test1():
     print("Test 1")
@@ -54,6 +55,8 @@ def test1():
     print("dequeued", q.dequeue())
     print("dequeued", q.dequeue())
     print(q)
+    print("is empty?", q.is_empty())
+    print("dequeued", q.dequeue())
     print("is empty?", q.is_empty())
 
 def main():

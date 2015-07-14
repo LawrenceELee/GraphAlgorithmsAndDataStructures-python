@@ -23,7 +23,7 @@ Self-balancing trees:
 - [ ] AVL tree:
 
 Misc:
-- [ ] Trie:
+- [ ] Trie (pronounced "try", from re'tri'val):
 - [ ] Treap:
 - [ ] Rope:
 
