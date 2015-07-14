@@ -121,6 +121,7 @@ def test_iterative_bfs():
     print("test_iterative_bfs:", iterative_bfs(graph3, 'h'))
 
 
+
 def bfs(G, s):
     '''
     BFS written pure and minimal python to demo the alg not the language.
