@@ -7,7 +7,7 @@ Data structures:
 - [ ] LinkedList: TODO: add(), remove().
 - [x] Stack: add to "top" of stack, remove from "top" of stack.
 - [x] Queue: add to "back" of queue, remove from "front" of queue.
-- [x] Deque: a "double-ended queue" aka circular buffer (i.e. and queue that you can push/pop from both the "front" and "back"). It is implemented in the python collections library.
+- [x] Deque: a "double-ended queue" aka circular buffer aka a doublely-linked list (i.e. a queue that you can push/pop from both the "front" and "back" fast). It is implemented in the python collections library. https://docs.python.org/2/tutorial/datastructures.html#using-lists-as-queues
 - [ ] Priority Queue (Heap): minimum (minheap) is on top, everything else is greater in value below.
 - [ ] Fibonacci Heaps are more efficent in theory, but are complicated to implement, so they are used in real life.
 
@@ -48,13 +48,13 @@ Non-Comparison based sorts:
 - [x] Graph representations
 
 Unweighted (all edges have implicited same weight), Undirected Graph:
-- [ ] Depth first search (DFS):
-- [ ] Breadth first search (BFS):
+- [x] Depth first search (DFS):
+- [x] Breadth first search (BFS):
 - [ ] Connected Components:
 
 Unweighted (all edges have implicited same weight), Directed Graph:
-- [ ] DFS
-- [ ] BFS
+- [x] DFS
+- [x] BFS
 - [ ] Strongly Connection Components
 - [ ] Topological sort
 - [ ] Cycle Detection

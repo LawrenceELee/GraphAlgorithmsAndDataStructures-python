@@ -8,10 +8,42 @@ Traversal and exploration:
         * traverses in outwardly expanding concentric rings from source node.
         * BFS can also solve shortest path problem for unweighted (both directed and undirected) graphs.
 
-Reachability:
-    * Connected Componenets
-    * Strongly Connected Components
-    * Topological sort (graph must be a directed acyclical graph (DAG))
+    #sample runs
+    running test_bfs()...
+    h -> d: ('h', 'f', 'c', 'd')    #finds shortest path.
+    h -> d: (7, 5, 2, 3)
+    h -> d: (7, 5, 2, 3)
+    a -> h: ('a', 'f', 'h')
+    a -> h: (0, 5, 7)
+    h -> a: No path from h to a
+
+    running test_dfs_iterative()...
+    h -> d: ('h', 'f', 'c', 'd')    #might find shortest path, in this case yes.
+    h -> d: (7, 5, 2, 3)
+    h -> d: (7, 5, 2, 3)
+    a -> h: ('a', 'f', 'h')
+    a -> h: (0, 5, 7)
+    h -> a: No path from h to a
+
+    running test_dfs_recursive()...
+    h -> d: ('h', 'g', 'f', 'c', 'd') #might find short path, in this case no.
+    h -> d: (7, 5, 2, 3)
+    h -> d: (7, 5, 2, 3)
+    a -> h: ('a', 'c', 'd', 'e', 'f', 'h')
+    a -> h: (0, 1, 2, 3, 4, 5, 6, 7)
+    h -> a: No path from h to a
+
+
+Reachability/accessibility:
+    only on undirected graphs.
+    * Connected Componenets:
+
+    only for directed graphs
+    * Topological sort: used to order things with dependencies (graph must be a DAG). For ex, steps to make a cake, order to take school courses, etc.
+      topological sorting of a DAG is equivalent to its reverse postordering.
+
+    * Strongly Connected Components: only for directed acyclic graphs (DAG).
+      Run DFS 2 times: 1st on G.reverse() then on G.
 
 Minimum spanning tree:
     * Kruskal's
@@ -32,6 +64,8 @@ if you think about it:
 a good implmentation to benckmark your code against in terms of quality and
 effciency; it uses CLOSURES instead of classes:
     https://github.com/pmatiello/python-graph/blob/master/core/pygraph/algorithms/searching.py
+    https://github.com/networkx/networkx/tree/master/networkx/algorithms/traversal
+    http://www.ics.uci.edu/~eppstein/PADS/DFS.py for pre, post order, and class.
 
 more reading on closures:
     http://www.reddit.com/r/Python/comments/1xdigg/nested_function/cfakafe
@@ -66,7 +100,7 @@ graph2 = [      #list of lists
     [f, h],             # g
     [f, g]              # h
 ]
-graph3 = {      #dict of string keys and set values
+graph3 = {      #dict of string (key), set (value). 
     'a': set('bcdef'),
     'b': set('ce'),
     'c': set('d'),
@@ -117,7 +151,9 @@ def test_bfs():
     print("running test_bfs()...")
     print("h -> d:", find_path(graph3, bfs, 'h', 'd')) #graph3, call with strs.
     print("h -> d:", find_path(graph1, bfs, h, d)) #graph1, call with var names.
+    print("h -> d:", find_path(graph2, bfs, h, d))
     print("a -> h:", find_path(graph3, bfs, 'a', 'h'))
+    print("a -> h:", find_path(graph1, bfs, a, h))
     print("h -> a:", find_path(graph3, bfs, 'h', 'a'))  #no path.
 
 
@@ -150,43 +186,113 @@ def dfs_iterative(G, s):
     edge_to = {s: None}     #list of predecessors (mark  how we got to node x.)
     stk = [s]               #use list as stack of nodes we need to explore.
 
-    while stk:
+    #preorder for iterative is easy.
+    #hard to figure out postorder for iterative dfs. where does the post go?
+
+    while stk:                      #simulate recursion with explicit stack.
         x = stk.pop()
         for y in G[x]:
-            if y in edge_to:    continue    #visited, so skip.
-            edge_to[y] = x
-            stk.append(y)                   #push v onto stack.
+            if y not in edge_to:    #only process new nodes, skip visited ones.
+                edge_to[y] = x
+                stk.append(y)       #push v onto stack.
     return edge_to
 
 def test_dfs_iterative():
     print("running test_dfs_iterative()...")
     print("h -> d:", find_path(graph3, dfs_iterative, 'h', 'd'))
     print("h -> d:", find_path(graph1, dfs_iterative, h, d))
+    print("h -> d:", find_path(graph2, dfs_iterative, h, d))
     print("a -> h:", find_path(graph3, dfs_iterative, 'a', 'h'))
+    print("a -> h:", find_path(graph1, dfs_iterative, a, h))
     print("h -> a:", find_path(graph3, dfs_iterative, 'h', 'a'))    #no path.
 
 def dfs_recursive(G, s):
     '''
     For recursive version, you need a seperate "visited" list.
     '''
-    edge_to = {s: None}
-    visited = []
-    _dfs_recursive(G, s, visited, edge_to)
+    edge_to = {s: None} #record the predecessor of node x.
+    visited = []    #marked nodes that have been visited and processed.
+
+    def _dfs_recursive(G, x):
+        '''
+        _def_recursive is the core dfs logic.
+
+        using CLOSURES!!! inner _dfs has access to state of outer dfs.
+        so don't need to change _dfs_recursive function signature to pass
+        edge_to & visited.
+        '''
+        visited.append(x)           #mark as visited
+        for y in G[x]:
+            if y not in visited:    #only process new nodes, skip visited ones.
+                edge_to[y] = x
+                _dfs_recursive(G, y)    #recursive call.
+
+    _dfs_recursive(G, s) #core DFS function for wrapper.
+    #using CLOSURES!!! inner dfs has access to state of outer dfs.
+    #so don't need to change _dfs function signature to pass edge_to & visited.
+
     return edge_to
-def _dfs_recursive(G, x, visited, edge_to):
-    visited.append(x)                   #mark as visited
-    for y in G[x]:
-        if y in visited:    continue    #visited, so skip.
-        edge_to[y] = x
-        _dfs_recursive(G, y, visited, edge_to)  #recursive call.
+
 def test_dfs_recursive():
     print("running test_dfs_recursive()...")
     print("h -> d:", find_path(graph3, dfs_recursive, 'h', 'd'))
     print("h -> d:", find_path(graph1, dfs_recursive, h, d))
+    print("h -> d:", find_path(graph2, dfs_recursive, h, d))
     print("a -> h:", find_path(graph3, dfs_recursive, 'a', 'h'))
+    print("a -> h:", find_path(graph1, dfs_recursive, a, h))
     print("h -> a:", find_path(graph3, dfs_recursive, 'h', 'a'))    #no path.
-            
-            
+
+
+
+
+def dfs_ordering(G):
+    '''
+    Even though this has similar idea to dfs_recursive, we need a separate
+    dfs to process orderings.
+    
+    We don't take source as args b/c we need to discover ALL nodes.
+
+    We can't wrap dfs_order around dfs_recursive because we don't share the
+    same "space" so we can't "get" pre, post, revpost unless we embed it inside.
+    Once the dfs_recusion terminates, all the "space" is torn down.
+
+    TODO: how do refactor this code to return a specific ordering.
+    '''
+    edge_to = {} #record the predecessor of node x.
+    visited = []    #marked nodes that have been visited and processed.
+    pre     = []    #pre-order traversal, what application?
+    post    = []    #post-order traversal, what application?
+    revpost = []    #revpost order is used for strongly conn componet alg.
+    #note: revpost is NOT the same as pre order!
+
+    def _dfs_recursive(G, x):   #for graph2, x is a list not an int
+        pre.append(x)
+        visited.append(x)               #mark as visited
+        print("G[x]:", G[x])
+        for y in G[x]:
+            if y not in visited:
+                edge_to[y] = x
+                _dfs_recursive(G, y)    #recursive call.
+        post.append(x)
+        revpost.append(x)
+
+    for x in G:
+        if x not in visited:
+            _dfs_recursive(G, x)
+
+    revpost.reverse()
+    print("pre:\t\t", pre)
+    print("post:\t\t", post)
+    print("revpost:\t", revpost)
+def test_dfs_ordering():
+    print("running test_dfs_ordering()...")
+    #print("graph1:", dfs_ordering(graph1)) #doesn't work on list of sets, why?
+    #print("graph2:", dfs_ordering(graph2)) #doesn't work on list of lists, why?
+    print("graph3:", dfs_ordering(graph3))
+
+
+
+
 
 def find_path(G, trav_alg, s, t):
     '''
@@ -205,16 +311,88 @@ def find_path(G, trav_alg, s, t):
     '''
     x = t                           #x is a "dummy variable"
     path = [x]
-    edge_to = trav_alg(G, s)                #explore graph.
+    edge_to = trav_alg(G, s)            #dynamic func application explore graph.
     try:
         while edge_to[x] is not None:   #walk backwards from t to s.
             path.append(edge_to[x])
             x = edge_to[x]
     except KeyError:
         return "No path from %s to %s" % (s, t)
-    path.reverse()  #reverse() is in-place, can't return path.reverse().
+    path.reverse()  #reverse() is in-place, path.reverse() returns 'None'.
     return tuple(path)
 
+
+
+
+def topsort(G):
+    '''
+    Topological sort: used to order things with dependencies.
+
+    Only works on directed acyclic graphs (DAG's).
+
+    For ex, steps to make a cake, order to take school courses, etc.
+    '''
+    #check if G is a DAG. if G has CYCLE, exit.
+    #run dfs_ordering on G for EVERY node to get a complete topsort.
+    #get REVERSEPOST ordering of nodes from dfs_ordering. this is the topsort.
+
+def test_topsort():
+    print("topsort:", topsort(graph3))
+
+def reverse(G):
+    '''
+    Reverses all edges in a directed graph.
+
+    Need by Kosaraju's SCC alg.
+    '''
+    if type(G) == list:
+        print("graph is a list")
+    elif type(G) == set:
+        print("graph is a set")
+    elif type(G) == dict:
+        print("graph is a dict")
+        rev = {}
+        for u in G: rev[u] = set()
+        for u in G:
+            for v in G[u]:
+                rev[v].add(u)
+        return rev
+def test_reverse():
+    print("graph:\n", graph1)                   
+    print("graph reverse:\n", reverse(graph1))      #won't work, can't have a set of sets b/c lists aren't hashable (b/c they are mutable)).
+    print("graph:\n", graph2)
+    print("graph reverse:\n", reverse(graph2))
+    print("graph:\n", graph3)
+    print("graph reverse:\n", reverse(graph3))
+
+def walk(G, s, S=None):     #recursive dfs without extra path finding stuff.
+    if S is None: S = set()
+    S.append(s)
+    for u in G[s]:
+        if u in S: continue
+        walk(G, u, S)
+def scc(G):
+    '''
+    Kosaraju' Strongly Connected Component alg.
+
+    Dependencies:
+        topological sort
+        reverse graph
+    '''
+
+    #alg
+    #run dfs_ordering on G.reverse(), 1st dfs run.
+    #for every node x in dfs_ordering.revpost(), run dfs. 2nd dfs run.
+    rev = reverse(G)
+    sccs, visited = [], []
+    for u in topsort(G):
+        if u in visited:        continue
+        C = walk(rev, u, visited)
+        visited.append(C)
+        sccs.append(C)
+    return sccs
+def test_scc():
+    print("scc:",scc(graph3))
 
 
 
@@ -268,6 +446,10 @@ def main():
     test_bfs()
     test_dfs_iterative()
     test_dfs_recursive()
+    test_dfs_ordering()
+    test_topsort()
+    test_reverse()
+    #test_scc()
 
     #test_recursive_dfs()   #a little buggy, path has extra nodes.
     #test_iterative_dfs()   #a little buggy, path has extra nodes.

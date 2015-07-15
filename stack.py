@@ -15,11 +15,15 @@ class Stack(list):
         '''
         Add a is_empty function that list class didn't have.
         Returns true if no elements in stack, false otherwise.
-        '''
+
+        #old version
         if self.__len__() <= 0:     #same as len(self) == 0
             return True
-        else:
-            return False
+        return False
+        '''
+        #new version: just check for non-existance
+        return not self
+
 
     def peek(self):
         '''

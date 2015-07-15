@@ -12,6 +12,17 @@ Demos of tips, tricks, and other gotchas writing python code.
 import sys
 print("max positive int value on this system:", sys.maxsize)
 print(2 ** 65) #python3 internaly auto promotes int to long when int overflows.
+print()
+
+
+
+'''tricky syntax: create a 1 element tuple vs using parenthesis'''
+will_eval_to_tuple = (1,)       #use the comma
+will_eval_to_int = (1)          #no comma
+print(type(will_eval_to_tuple))     #is a tuple
+print(type(will_eval_to_int))       #is an int
+print()
+
 
 
 '''
@@ -32,6 +43,136 @@ almost_equal(sum(0.1 for i in range(10)), 1.0)
 #for exact decimals use the deciaml module
 from decimal import *
 sum(Decimal("0.1") for i in range(10)) == Decimal("1.0")    #returns True
+print()
+
+
+
+
+'''
+==================================================
+seperate above and below examples
+==================================================
+'''
+
+
+'''
+Python functions are "first-class" meaning functions are also objects.
+This leads to some interesting things that can be done in Python which can't
+be done in Java. Which leads to map-reduce, map-fold.
+'''
+from math import sqrt, log
+
+list_of_functions = [print, log, sqrt]  #built-n python functions.
+data = 100
+
+for func in list_of_functions:
+    print("func name: %s result: %s" % (func, func(data)))
+
+data = (1, 2, 3, 4, 5, 6, 7, 8, 9, 0)
+
+def is_even(elmt):
+    return (elmt%2) == 0
+print("apply is_even() function to data:", end=' ')
+map(is_even, data)                      #creates a map object, a generator.
+print([i for i in map(is_even, data)])  #iterate map obj to get results.
+print("filtering data through is_even():", end=' ')
+filter(is_even, data)   #filter a func that takes a func, returns a generator.
+print([i for i in filter(is_even, data)])   #iterate filter obj to get results.
+
+print("apply sqrt() on data seq:", end=' ')
+print([i for i in map(sqrt, data)])
+print()
+
+#zip() built-in returns a tuple where the i-th element comes from the i-th iterable argument
+tupA = (1, 2, 3, 4, 5, 6)
+tupB = ('a', 'b', 'c')
+zip_obj = zip(tupA, tupB)
+#zip_obj is <zip object at 0x7fdbafac>
+print("zip example:")
+for i in zip(tupA, tupB):
+    print(i)
+# output
+#   (1, 'a')
+#   (2, 'b')
+#   (3, 'c')
+print()
+
+
+
+'''
+==================================================
+seperate above and below examples
+==================================================
+'''
+
+'''
+keys for dictionaries can only be hashable (b/c immutable) types: tuples, strs.
+can't use mutable types like sets, lists, dicts for keys.
+
+mutable types can used as values in dicts b/c they are allowed to modified.
+
+src: http://stackoverflow.com/questions/8056130/immutable-vs-mutable-types-python
+Immutable: python defines certain types as immutable.
+numbers: int, float, complex
+immutable sequences: str, tuples, bytes, frozensets
+
+Mutable: everything else defaults to mutable.
+mutable sequences: list, byte array
+set type: sets
+mapping type: dict
+classes, class instances
+etc.
+
+And a trick is to use id() built-in function. For instance,
+
+Using on integer:
+>>> n = 1
+>>> id(n)       #check id
+**704
+>>> n += 1      #modify
+>>> n
+2
+>>> id(n)       #id changes because must create a new obj b/c original immutable
+**736
+
+Using on list:
+>>> m = [1]
+>>> id(m)       #check id
+**416           
+>>> m.append(2) #modify
+>>> m
+[1, 2]
+>>> id(m)       #id remains the same, since internal contents were modified.
+**416
+'''
+
+#tuples work because they are immutable (implies hashable).
+#>>> {(1,2,3): 'a', (1,2): 'b'}             #tuples as keys will work.
+#{(1, 2): 'b', (1, 2, 3): 'a'}
+
+#same with strings                          #strings as keys will work.
+#>>> {'1,2,3': 'a', '1,2': 'b'}
+#{'1,2': 'b', '1,2,3': 'a'}
+
+#>>> {3: 'a', 2: 'b'}                       #ints work too.
+#{2: 'b', 3: 'a'}
+
+#>>> {[1,2,3]: 'a', [1,2]: 'b'}             #trying to use list as key.
+#Traceback (most recent call last):         #will raise exception/error.
+#File "<stdin>", line 1, in <module>
+#TypeError: unhashable type: 'list'
+
+#>>> {set([1,2,3]): 'a', set([1,2]): 'b'}   #trying to use set as key.
+#Traceback (most recent call last):
+#File "<stdin>", line 1, in <module>
+#TypeError: unhashable type: 'set'
+
+#>>> {{1,2,3}: 'a', {1,2}: 'b'}}            #trying to use dict/set as key.
+#Traceback (most recent call last):
+#File "<stdin>", line 1, in <module>
+#TypeError: unhashable type: 'set'
+
+
 
 
 
@@ -53,6 +194,7 @@ my_list = [randnum(1000) for i in range(100)]
 #convert list to set to have faster lookup.
 my_set = set(my_list)
 42 in my_set    #is num 42 in the list?
+print()
 
 '''
 constant for sets matters when you are checking and adding to it
@@ -80,6 +222,7 @@ print(x)        #gives you: [1, 2, 3, [4, 5]]
 x = [1, 2, 3]
 x.extend([4, 5])
 print(x)        #gives you: [1, 2, 3, 4, 5]
+print()
 
 
 '''
@@ -119,11 +262,30 @@ results = sum(my_list, [])  #same as sum(my_str, '') == sum(my_strs, ''.join())
 #sum() on strings is concatenation (i.e. +=)
 
 
-#how efficient is list comprehension?
-[[j for j in range(5)] for i in range(10)]
-#is it just 2 nested for loops?
-#are there some optimziations under the hood?
-#how well does it scale?
+'''list comprehension'''
+#print("list comp ex1:", [[i for j in range(5)] for i in range(10)])
+# how efficient is list comprehension? i dont know.
+# is it just 2 nested for loops?
+# are there some optimziations under the hood?
+# how well does it scale?
+
+# action for i in outerloop for j in innerloop
+#print("list comp ex2:", [(i, j) for i in range(5) for j in range(10)])
+
+# equivalent to above
+#lst = []
+#for i in range(5):
+    #for j in range(10):
+        #lst.append((i, j))
+#print("equivalent:", lst)
+
+# list of (x, y, z) 3d coordinatese
+#print("list comp ex3:", [(x,y,z) for x in range(2) for y in range(3) for z in range(5)])
+
+#using dict comprehension to reverse/inverse a dict/map available in v2.7+/3+
+m = {'a':1, 'b':'2', 'c':3, 'd':(3,1), 'e':'0' }
+inv_m = dict((v,k) for k,v in m.items()) #or inv_m = {v:k for k,v in m.items()}
+print("inverse:", inv_m)
 
 '''
 #for-loop syntactic sugar:
