@@ -59,12 +59,12 @@ Unweighted (all edges have implicited same weight), Directed Graph:
 - [ ] Topological sort
 - [ ] Strongly Connection Components
 
-Traversal/Explore problem:
-- [x] traversal solves for this problem. DFS (trav w/ stack), BFS (trav with queue).
+Exploration problem:
+- Traversal alg solves for this problem; DFS (trav w/ stack), BFS (trav w/ queue).
 
 Reachability and connectivity problem:
-- [ ] Connected Components solves for undirected graphs.
-- [ ] Kosaraju's SCC alg solves for directed graphs.
+- Connected Components solves for undirected graphs.
+- Kosaraju's SCC alg solves for directed graphs.
 
 Minimum Spanning Tree problem (Weighted (explicit weight required), Undirected Graphs):
 - [ ] Prim
@@ -73,7 +73,7 @@ Minimum Spanning Tree problem (Weighted (explicit weight required), Undirected G
 Shortest Path problem (Weighted (explicit weight required), Directed Graphs):
 - [ ] Dijkstra (no negative edge weights, faster than Bellman-Ford if you know all edges are non-negative ahead of time.)
 - [ ] Bellman-Ford (allows negative edge weights)
-- { } BFS solves shortest path for unweighted graphs (directed or undirected).
+- BFS solves shortest path for unweighted graphs (directed or undirected).
 
 Max-Flow problem
 - [ ] Ford-Fulkerson
