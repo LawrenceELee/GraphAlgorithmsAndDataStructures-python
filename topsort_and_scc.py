@@ -15,7 +15,7 @@ from dfs import dfs_recursive
 
 def reverse(G):
     '''
-    Reverses all edges in a directed graph.
+    Reverses (AKA inverse? AKA transpose?) all edges in a directed graph.
 
     Need by Kosaraju's SCC alg.
     '''
@@ -173,6 +173,10 @@ def scc(G):
     Dependencies:
         topological sort
         reverse graph
+
+    Alternate SCC algs:
+        1) Tarjan’s
+        2) Gabow’s (or, rather, the Cheriyan-Mehlhorn/Gabow) 
     '''
 
     sccs    = {}
@@ -235,9 +239,9 @@ def test_scc():
 
 
 def main():
-    #test_reverse()
-    #test_dfs_ordering()
-    #test_topsort()
+    test_reverse()
+    test_dfs_ordering()
+    test_topsort()
     test_scc()
 
 if __name__ == "__main__":
