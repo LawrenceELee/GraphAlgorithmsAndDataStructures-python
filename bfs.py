@@ -15,40 +15,8 @@ h -> a: No path from h to a
 
 from collections import deque
 
-#sample graphs used to test algs; they represent the same directed
-#unweighted graph (with cycles) using diff python structures.
-a, b, c, d, e, f, g, h = range(8)
-graph1 = [      #list of sets (dicts without values)
-    {b, c, d, e, f},    # a
-    {c, e},             # b
-    {d},                # c
-    {e},                # d
-    {f},                # e
-    {c, g, h},          # f
-    {f, h},             # g
-    {f, g}              # h
-]
-graph2 = [      #list of lists
-    [b, c, d, e, f],    # a
-    [c, e],             # b
-    [d],                # c
-    [e],                # d
-    [f],                # e
-    [c, g, h],          # f
-    [f, h],             # g
-    [f, g]              # h
-]
-graph3 = {      #dict of string (key), set (value). 
-    'a': set('bcdef'),
-    'b': set('ce'),
-    'c': set('d'),
-    'd': set('e'),
-    'e': set('f'),
-    'f': set('cgh'),
-    'g': set('fh'),
-    'h': set('fg')
-}
-
+from graphs import *
+#why does this have a different effect than 'import graphs' ?
 
 
 def bfs(G, s):

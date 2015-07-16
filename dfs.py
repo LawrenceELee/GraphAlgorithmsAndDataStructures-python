@@ -45,39 +45,7 @@ more reading on closures:
 
 '''
 
-#sample graphs used to test algs; they represent the same directed
-#unweighted graph (with cycles) using diff python structures.
-a, b, c, d, e, f, g, h = range(8)
-graph1 = [              #list of sets (dicts without values)
-    {b, c, d, e, f},        # a
-    {c, e},                         # b
-    {d},                            # c
-    {e},                            # d
-    {f},                            # e
-    {c, g, h},                      # f
-    {f, h},                         # g
-    {f, g}                          # h
-]
-graph2 = [              #list of lists
-    [b, c, d, e, f],        # a
-    [c, e],                         # b
-    [d],                            # c
-    [e],                            # d
-    [f],                            # e
-    [c, g, h],                      # f
-    [f, h],                         # g
-    [f, g]                          # h
-]
-graph3 = {              #dict of string (key), set (value). 
-    'a': set('bcdef'),
-    'b': set('ce'),
-    'c': set('d'),
-    'd': set('e'),
-    'e': set('f'),
-    'f': set('cgh'),
-    'g': set('fh'),
-    'h': set('fg')
-}
+from graphs import *
 
 def dfs_iterative(G, s):
     '''
@@ -121,7 +89,7 @@ def dfs_iterative(G, s):
     return edge_to
 
 def test_dfs_iterative():
-    print("running test_dfs_iterative()...")
+    print("\nrunning test_dfs_iterative()...")
     print("h -> d:", find_path(graph3, dfs_iterative, 'h', 'd'))
     print("h -> d:", find_path(graph1, dfs_iterative, h, d))
     print("h -> d:", find_path(graph2, dfs_iterative, h, d))
@@ -129,10 +97,11 @@ def test_dfs_iterative():
     print("a -> h:", find_path(graph1, dfs_iterative, a, h))
     print("h -> a:", find_path(graph3, dfs_iterative, 'h', 'a'))    #no path.
 
-def dfs_recursive(G, s):
+def dfs_recursive(G, s=None):
     '''
-    For recursive version, you need a seperate "visited" list.
+    Recursive version.
     '''
+
     edge_to = {s: None} #record the predecessor of node x.
     visited = []    #marked nodes that have been visited and processed.
 
@@ -140,24 +109,27 @@ def dfs_recursive(G, s):
         '''
         _def_recursive is the core dfs logic.
 
-        using CLOSURES!!! inner _dfs has access to state of outer dfs.
+        using CLOSURES!!! inner (this) _dfs has access to state of
+        outer dfs.
+
         so don't need to change _dfs_recursive function signature to pass
         edge_to & visited.
         '''
-        visited.append(x)           #mark as visited
+        visited.append(x)                   #mark as visited.
         for y in G[x]:
-            if y not in visited:    #only process new nodes, skip visited ones.
-                edge_to[y] = x
-                _dfs_recursive(G, y)    #recursive call.
+            if y in visited:    continue    #seen before, skip over to next.
+
+            edge_to[y] = x
+            _dfs_recursive(G, y)            #recursive call.
 
     _dfs_recursive(G, s) #core DFS function for wrapper.
     #using CLOSURES!!! inner dfs has access to state of outer dfs.
-    #so don't need to change _dfs function signature to pass edge_to & visited.
-
+    #so don't need to change _dfs function signature to pass
+    #edge_to & visited.
     return edge_to
 
 def test_dfs_recursive():
-    print("running test_dfs_recursive()...")
+    print("\nrunning test_dfs_recursive()...")
     print("h -> d:", find_path(graph3, dfs_recursive, 'h', 'd'))
     print("h -> d:", find_path(graph1, dfs_recursive, h, d))
     print("h -> d:", find_path(graph2, dfs_recursive, h, d))
