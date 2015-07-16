@@ -14,6 +14,80 @@ There are also other more complicated representations:
     edge lists or edge sets
     incidence matrices
     incidence list
+
+
+Traversal and exploration:
+    * Depth First Search (DFS):
+        * traverses as deep as it can down on path, before trying next path.
+    * Breadth First Search (BFS):
+        * traverses in outwardly expanding concentric rings from source node.
+        * BFS can also solve shortest path problem for unweighted (both directed and undirected) graphs.
+
+    #sample runs
+    running test_bfs()...
+    h -> d: ('h', 'f', 'c', 'd')    #finds shortest path.
+    h -> d: (7, 5, 2, 3)
+    h -> d: (7, 5, 2, 3)
+    a -> h: ('a', 'f', 'h')
+    a -> h: (0, 5, 7)
+    h -> a: No path from h to a
+
+    running test_dfs_iterative()...
+    h -> d: ('h', 'f', 'c', 'd')    #might find shortest path, in this case yes.
+    h -> d: (7, 5, 2, 3)
+    h -> d: (7, 5, 2, 3)
+    a -> h: ('a', 'f', 'h')
+    a -> h: (0, 5, 7)
+    h -> a: No path from h to a
+
+    running test_dfs_recursive()...
+    h -> d: ('h', 'g', 'f', 'c', 'd') #might find short path, in this case no.
+    h -> d: (7, 5, 2, 3)
+    h -> d: (7, 5, 2, 3)
+    a -> h: ('a', 'c', 'd', 'e', 'f', 'h')
+    a -> h: (0, 1, 2, 3, 4, 5, 6, 7)
+    h -> a: No path from h to a
+
+
+Reachability/accessibility:
+    only on undirected graphs.
+    * Connected Componenets:
+
+    only for directed graphs
+    * Topological sort: used to order things with dependencies (graph must be a DAG). For ex, steps to make a cake, order to take school courses, etc.
+      topological sorting of a DAG is equivalent to its reverse postordering.
+
+    * Strongly Connected Components: only for directed acyclic graphs (DAG).
+      Run DFS 2 times: 1st on G.reverse() then on G.
+
+Minimum spanning tree:
+    * Kruskal's
+    * Prim's
+
+Shortest path:
+    * Dijkstra
+    * Bellman-Ford
+
+we can generalize DFS and BFS to a general traverse alg and by passing
+in a stack or queue create either a DFS or BFS.
+
+if you think about it:
+    DFS, BFS -> a spanning tree (not necessarily minimum)
+    then the next refinement is to find the min spanning tree -> Prim, Kruskal
+    then the next refinement is to find the shortest path the spanning tree: Dijkstra.
+
+a good implmentation to benckmark your code against in terms of quality and
+effciency; it uses CLOSURES instead of classes:
+    https://github.com/pmatiello/python-graph/blob/master/core/pygraph/algorithms/searching.py
+    https://github.com/networkx/networkx/tree/master/networkx/algorithms/traversal
+    http://www.ics.uci.edu/~eppstein/PADS/DFS.py for pre, post order, and class.
+
+more reading on closures:
+    http://www.reddit.com/r/Python/comments/1xdigg/nested_function/cfakafe
+    http://stackoverflow.com/a/1305633
+    http://stackoverflow.com/a/1589606
+    http://stackoverflow.com/a/2006017
+
 '''
 
 
@@ -141,3 +215,5 @@ we can make graph weighted by putting non-zero integers as weights and 0 or infi
 #out degree of node a. add 1 to count for each edge that has val less than inf.
 #remember to subtract 1 so that it doesn't count the self-loop from a to a.
 #5  #5 edges going out of node a.
+
+

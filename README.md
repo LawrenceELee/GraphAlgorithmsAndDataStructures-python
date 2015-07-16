@@ -35,7 +35,7 @@ Comparison based sorts (best case limit is O(n lg n)):
 - [x] Quick sort: avg runtime: O(n lg n) under the assumption that elements are randomized/shuffled and that they are mostly unique/few duplicates, if not then you will get worst runtime: O(n^2), aux mem: O(lg n), stable: no, in-place: yes (even though it has rec call stacks).
 - [ ] Quick 3-way sort (variant of quicksort) that is great for data with many duplicates.
 - [ ] Heap sort: avg/worst runtime: O(n lg n), aux mem: O(1). stable?
-- [ ] Timsort: python’s native sorting algorithm, is a naturally adaptive version of merge sort. best runtime: O(n), worst O(n lg n).
+- [x] Timsort: python’s native sorting algorithm, is a naturally adaptive version of merge sort. best runtime: O(n), worst O(n lg n).
 - [x] Gnomesort: a variant of insertion sort.
 - [ ] Shell sort: a variant of insertion sort that compares 3+ elmts at a time.
 
@@ -45,7 +45,7 @@ Non-Comparison based sorts:
 - [ ] MSD radix sort: avg/worst runtime: O(nk) where n is # of bits/digits starting with most signif digit. aux mem: O(n+k), stable: yes, in-place: no.
 - [ ] LSD radix sort: like MSD but starting from least signif digit, stable: yes, in-place: no.
 
-- [x] Graph representations
+- Graph representations
 
 Unweighted (all edges have implicited same weight), Undirected Graph:
 - [x] Depth first search (DFS):

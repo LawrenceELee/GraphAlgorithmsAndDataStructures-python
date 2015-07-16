@@ -75,10 +75,8 @@ more reading on closures:
 
 '''
 
-from collections import deque
-
-#these ths sample graph that we are going to test algs on; they are represent
-#the same directed unweighted graph (with cycles) using diff python structures.
+#sample graphs used to test algs; they represent the same directed
+#unweighted graph (with cycles) using diff python structures.
 a, b, c, d, e, f, g, h = range(8)
 graph1 = [      #list of sets (dicts without values)
     {b, c, d, e, f},    # a
@@ -111,288 +109,124 @@ graph3 = {      #dict of string (key), set (value).
     'h': set('fg')
 }
 
-
-def bfs(G, s):
-    '''
-    BFS written pure and minimal python to demo the alg not the language.
-
-    Only iterative, no recursive version of BFS.
-
-    This alg will start at node s and explore all nodes in the entire
-    graph, marking down what node we used to reach the current node.
-    Using edge_to we can reconstruct the path from s to any node.
-
-    Since BFS solves the shorest path for unweighted graphs, we keep
-    track of "edge_to" of node v so that we can reconstruct path from
-    s to t.
-
-    @type G: list of lists, list of sets, dict of sets
-    @param G: the graph we are exploring.
-
-    @type s: string, variable name
-    @param s: source/starting node.
-
-    @rtype: list
-    @return: list each of the node's predecessor for path starting at s.
-    '''
-
-    #visited = []   #don't need this, since edge_to is dynamically resized we can just check for existance to see if we visited node or not.
-    edge_to = {s: None}     #list of predecessors (mark  how we got to node x.)
-    que = deque([s])        #queue of nodes we still need to explore.
-
-    while que:
-        x = que.popleft()                   
-        for y in G[x]:                      #explore all neighbors of node u.
-            if y in edge_to:    continue    #already visited/explore, so skip.
-            edge_to[y] = x                  #record that got to v from u.
-            que.append(y) #queue every unvisited neighbor.
-    return edge_to
-def test_bfs():
-    print("running test_bfs()...")
-    print("h -> d:", find_path(graph3, bfs, 'h', 'd')) #graph3, call with strs.
-    print("h -> d:", find_path(graph1, bfs, h, d)) #graph1, call with var names.
-    print("h -> d:", find_path(graph2, bfs, h, d))
-    print("a -> h:", find_path(graph3, bfs, 'a', 'h'))
-    print("a -> h:", find_path(graph1, bfs, a, h))
-    print("h -> a:", find_path(graph3, bfs, 'h', 'a'))  #no path.
-
-
-def dfs_iterative(G, s):
-    '''
-    DFS written pure and minimal python to demo the alg not the language.
-
-    Iterative recursive version.
-
-    This alg will start at node s and explore all nodes in the entire
-    graph, marking down what node we used to reach the current node.
-    Using edge_to we can reconstruct the path from s to any node.
-
-    We can use DFS to create a pre and post order of the nodes starting from
-    source node.
-
-    DFS DOES NOT solve shortest path for unweighted graphs, but we
-    can still use it to find A PATH from s to t from the edge_to list.
-
-    @type G: list of lists, list of sets, dict of sets
-    @param G: the graph we are exploring.
-
-    @type s: string, variable name
-    @param s: source/starting node.
-
-    @rtype: list
-    @return: list each of the node's predecessor for path starting at s.
-    '''
-    #visited = []   #don't need this, since edge_to is dynamically resized we can just check for existance to see if we visited node or not.
-    edge_to = {s: None}     #list of predecessors (mark  how we got to node x.)
-    stk = [s]               #use list as stack of nodes we need to explore.
-
-    #preorder for iterative is easy.
-    #hard to figure out postorder for iterative dfs. where does the post go?
-
-    while stk:                      #simulate recursion with explicit stack.
-        x = stk.pop()
-        for y in G[x]:
-            if y not in edge_to:    #only process new nodes, skip visited ones.
-                edge_to[y] = x
-                stk.append(y)       #push v onto stack.
-    return edge_to
-
-def test_dfs_iterative():
-    print("running test_dfs_iterative()...")
-    print("h -> d:", find_path(graph3, dfs_iterative, 'h', 'd'))
-    print("h -> d:", find_path(graph1, dfs_iterative, h, d))
-    print("h -> d:", find_path(graph2, dfs_iterative, h, d))
-    print("a -> h:", find_path(graph3, dfs_iterative, 'a', 'h'))
-    print("a -> h:", find_path(graph1, dfs_iterative, a, h))
-    print("h -> a:", find_path(graph3, dfs_iterative, 'h', 'a'))    #no path.
-
-def dfs_recursive(G, s):
-    '''
-    For recursive version, you need a seperate "visited" list.
-    '''
-    edge_to = {s: None} #record the predecessor of node x.
-    visited = []    #marked nodes that have been visited and processed.
-
-    def _dfs_recursive(G, x):
-        '''
-        _def_recursive is the core dfs logic.
-
-        using CLOSURES!!! inner _dfs has access to state of outer dfs.
-        so don't need to change _dfs_recursive function signature to pass
-        edge_to & visited.
-        '''
-        visited.append(x)           #mark as visited
-        for y in G[x]:
-            if y not in visited:    #only process new nodes, skip visited ones.
-                edge_to[y] = x
-                _dfs_recursive(G, y)    #recursive call.
-
-    _dfs_recursive(G, s) #core DFS function for wrapper.
-    #using CLOSURES!!! inner dfs has access to state of outer dfs.
-    #so don't need to change _dfs function signature to pass edge_to & visited.
-
-    return edge_to
-
-def test_dfs_recursive():
-    print("running test_dfs_recursive()...")
-    print("h -> d:", find_path(graph3, dfs_recursive, 'h', 'd'))
-    print("h -> d:", find_path(graph1, dfs_recursive, h, d))
-    print("h -> d:", find_path(graph2, dfs_recursive, h, d))
-    print("a -> h:", find_path(graph3, dfs_recursive, 'a', 'h'))
-    print("a -> h:", find_path(graph1, dfs_recursive, a, h))
-    print("h -> a:", find_path(graph3, dfs_recursive, 'h', 'a'))    #no path.
-
-
-
-
-def dfs_ordering(G):
-    '''
-    Even though this has similar idea to dfs_recursive, we need a separate
-    dfs to process orderings.
-    
-    We don't take source as args b/c we need to discover ALL nodes.
-
-    We can't wrap dfs_order around dfs_recursive because we don't share the
-    same "space" so we can't "get" pre, post, revpost unless we embed it inside.
-    Once the dfs_recusion terminates, all the "space" is torn down.
-
-    TODO: how do refactor this code to return a specific ordering.
-    '''
-    edge_to = {} #record the predecessor of node x.
-    visited = []    #marked nodes that have been visited and processed.
-    pre     = []    #pre-order traversal, what application?
-    post    = []    #post-order traversal, what application?
-    revpost = []    #revpost order is used for strongly conn componet alg.
-    #note: revpost is NOT the same as pre order!
-
-    def _dfs_recursive(G, x):   #for graph2, x is a list not an int
-        pre.append(x)
-        visited.append(x)               #mark as visited
-        print("G[x]:", G[x])
-        for y in G[x]:
-            if y not in visited:
-                edge_to[y] = x
-                _dfs_recursive(G, y)    #recursive call.
-        post.append(x)
-        revpost.append(x)
-
-    for x in G:
-        if x not in visited:
-            _dfs_recursive(G, x)
-
-    revpost.reverse()
-    print("pre:\t\t", pre)
-    print("post:\t\t", post)
-    print("revpost:\t", revpost)
-def test_dfs_ordering():
-    print("running test_dfs_ordering()...")
-    #print("graph1:", dfs_ordering(graph1)) #doesn't work on list of sets, why?
-    #print("graph2:", dfs_ordering(graph2)) #doesn't work on list of lists, why?
-    print("graph3:", dfs_ordering(graph3))
-
-
-
-
-
-def find_path(G, trav_alg, s, t):
-    '''
-    Used by both DFS and BFS to trace path from source to target.
-    TODO: make it a query so that it doesn't have to run trav_alg every
-    time. Just run the alg once, and allow for repeated queries.
-
-    @type G: list of lists, list of sets, dict of sets
-    @param G: the graph we are exploring.
-
-    @type s: string, variable name
-    @param s: source/starting node.
-
-    @rtype: list
-    @return: list each of the node's predecessor for path starting at s.
-    '''
-    x = t                           #x is a "dummy variable"
-    path = [x]
-    edge_to = trav_alg(G, s)            #dynamic func application explore graph.
-    try:
-        while edge_to[x] is not None:   #walk backwards from t to s.
-            path.append(edge_to[x])
-            x = edge_to[x]
-    except KeyError:
-        return "No path from %s to %s" % (s, t)
-    path.reverse()  #reverse() is in-place, path.reverse() returns 'None'.
-    return tuple(path)
-
-
-
-
-def topsort(G):
-    '''
-    Topological sort: used to order things with dependencies.
-
-    Only works on directed acyclic graphs (DAG's).
-
-    For ex, steps to make a cake, order to take school courses, etc.
-    '''
-    #check if G is a DAG. if G has CYCLE, exit.
-    #run dfs_ordering on G for EVERY node to get a complete topsort.
-    #get REVERSEPOST ordering of nodes from dfs_ordering. this is the topsort.
-
-def test_topsort():
-    print("topsort:", topsort(graph3))
-
-def reverse(G):
-    '''
-    Reverses all edges in a directed graph.
-
-    Need by Kosaraju's SCC alg.
-    '''
-    if type(G) == list:
-        print("graph is a list")
-    elif type(G) == set:
-        print("graph is a set")
-    elif type(G) == dict:
-        print("graph is a dict")
-        rev = {}
-        for u in G: rev[u] = set()
-        for u in G:
-            for v in G[u]:
-                rev[v].add(u)
-        return rev
-def test_reverse():
-    print("graph:\n", graph1)                   
-    print("graph reverse:\n", reverse(graph1))      #won't work, can't have a set of sets b/c lists aren't hashable (b/c they are mutable)).
-    print("graph:\n", graph2)
-    print("graph reverse:\n", reverse(graph2))
-    print("graph:\n", graph3)
-    print("graph reverse:\n", reverse(graph3))
-
-def walk(G, s, S=None):     #recursive dfs without extra path finding stuff.
-    if S is None: S = set()
-    S.append(s)
-    for u in G[s]:
-        if u in S: continue
-        walk(G, u, S)
+graph_scc = {       #2 scc's {a,b,c} and {d,e,f,g,}
+    'a': set('b'),
+    'b': set('c'),
+    'c': set('a'),
+    'd': set('efgh'),
+    'e': set('fghd'),
+    'f': set('ghde'),
+    'g': set('h'),
+    'h': set('')
+}
 def scc(G):
     '''
-    Kosaraju' Strongly Connected Component alg.
+    Kosaraju's Strongly Connected Component alg.
+
+    The outline of the alg: run DFS two times.
+    1) run dfs_ordering on reverse(G), yielding a reverse post ordering on G rev
+    2) for every node x in dfs_ordering.revpost(), run dfs.
 
     Dependencies:
         topological sort
         reverse graph
     '''
 
-    #alg
-    #run dfs_ordering on G.reverse(), 1st dfs run.
+    visited = []    #faster to check memebership than list.
+    sccs    = {}
+
+    #iterative dfs without extra path finding stuff.
+    def _traverse(G, s, storage=[]):        
+        #dynically make alg dfs or bfs by specifiying what storage to use.
+        #if queue/list/deque -> bfs. if stack -> dfs.
+        #default is set() b/c faster to check membership.
+        left_to_explore = storage   
+        left_to_explore.append(s)
+
+        while left_to_explore:
+            x = left_to_explore.pop()
+            print("G:", G)
+            print("x: ", x)
+            print("G[x]: ", G[x])
+            for y in G[x]:
+                if y not in visited:        #node process prior, skip.
+                    continue
+
+                sccs[x] = y                 #record the parent scc.
+                visited.append(y)               #we know this scc, skip in future.
+                left_to_explore.append(y)
+
+    #run dfs_ordering on G.reverse() to get reverse post ordering, 1st dfs run.
+    #(i.e. run topsort on G_reverse)
+    G_reverse = reverse(G)
+    topsort_order = topsort(G_reverse)      #topsort_order is just reverse post.
+    print("HERE topsort order:", topsort_order)
+    
     #for every node x in dfs_ordering.revpost(), run dfs. 2nd dfs run.
-    rev = reverse(G)
-    sccs, visited = [], []
-    for u in topsort(G):
-        if u in visited:        continue
-        C = walk(rev, u, visited)
-        visited.append(C)
-        sccs.append(C)
+    for x in topsort_order:
+        if x in visited: continue
+        c = _traverse(G_reverse, x, visited)
+        visited.append(c)
+        sccs[x] = c
+    '''
+    for x in topsort_order:
+        #get a node in the order
+        print("x:", x)
+        for y in G[x]:              #get adj list, list of edges.
+            #print("sccs:", scc)
+            print("y:", y)
+            if y in visited: continue   #processed before, skip.
+            comp = _traverse(G, y, visited)
+            visited.add(comp)
+            sccs[y] = comp
+    '''
+
     return sccs
 def test_scc():
-    print("scc:",scc(graph3))
+    my_sccs = scc(graph_scc)
+    print("sccs:", my_sccs)
+    '''
+    for node in scc(graph3):
+        for i in node:
+            print("i:", i)
+    '''
+
+def traverse(G, s, storage=set()):      
+    '''
+    Generalized graph traversal algorithm.
+
+    If you use queue for storage, traversal turns into BFS.
+    If you use stack for storage, traversal turns into DFS.
+
+    Default is to use list as a stack. Using set is faster to check for
+    membership, but it doesn't have the same API functions as list(), deque().
+
+    Forget BFS for now.
+    '''
+    to_explore = storage    
+    to_explore.add(s)
+
+    predecessors = {s: None}
+
+    while to_explore:
+        x = to_explore.pop()
+        for y in G[x]:
+            if y in predecessors:   continue    #node process prior, skip.
+
+            predecessors[y] = x
+            to_explore.add(y)
+            #visited.append(y)              #we know this scc, skip in future.
+
+    return predecessors
+def test_traverse():
+    predecessors = traverse(graph3, 'a')
+    x = 'h'
+    path = [x]
+    while predecessors[x] is not None:  #walk backwards from t to s.
+        path.append(predecessors[x])
+        x = predecessors[x]
+    path.reverse()
+    print("test traversal path:", path)
 
 
 
@@ -400,6 +234,9 @@ def test_scc():
 '''
 The 3 below graph algs are slightly buggy. They are only examples used for
 comparison and reference.
+
+They seem to work with lists of lists, which is good for inverse/reverse graphs.
+
 src: http://code.activestate.com/recipes/576723-dfs-and-bfs-graph-traversal
 '''
 def recursive_dfs(graph, start, path=[]):
@@ -443,13 +280,11 @@ def test_iterative_bfs():
 
 
 def main():
-    test_bfs()
-    test_dfs_iterative()
-    test_dfs_recursive()
     test_dfs_ordering()
     test_topsort()
     test_reverse()
-    #test_scc()
+    test_scc()
+    #test_traverse()
 
     #test_recursive_dfs()   #a little buggy, path has extra nodes.
     #test_iterative_dfs()   #a little buggy, path has extra nodes.
