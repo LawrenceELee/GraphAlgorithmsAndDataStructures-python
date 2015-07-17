@@ -43,6 +43,10 @@ more reading on closures:
     http://stackoverflow.com/a/1589606
     http://stackoverflow.com/a/2006017
 
+
+TODO: incorporate hooks (overridable functions) to dfs that let the user
+perform custom processing in pre- and postorder.
+
 '''
 
 from graphs import *

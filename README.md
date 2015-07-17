@@ -45,6 +45,14 @@ Non-Comparison based sorts:
 - [ ] MSD radix sort: avg/worst runtime: O(nk) where n is # of bits/digits starting with most signif digit. aux mem: O(n+k), stable: yes, in-place: no.
 - [ ] LSD radix sort: like MSD but starting from least signif digit, stable: yes, in-place: no.
 
+
+Searching and selecting:
+
+- [ ] Binary search on sorted data: runtime O( lg n )
+- [ ] Quick selection on a randomize data: expectecd runtime O( n ) using the partition portion of quicksort. Applications: finding k-th smallest elmt in data (the median for k = n/2).
+
+
+
 - Graph representations
 
 Unweighted (all edges have implicited same weight), Undirected Graph:
