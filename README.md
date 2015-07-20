@@ -78,10 +78,13 @@ Minimum Spanning Tree problem (Weighted (explicit weight required), Undirected G
 - [ ] Prim
 - [ ] Kruskal
 
-Shortest Path problem (Weighted (explicit weight required), Directed Graphs):
+Shortest Path problem (Weighted (explicit weight required), Directed Graphs) (single source shortest path; single source, single target/dest):
 - [ ] Dijkstra (no negative edge weights, faster than Bellman-Ford if you know all edges are non-negative ahead of time.)
 - [ ] Bellman-Ford (allows negative edge weights)
 - BFS solves shortest path for unweighted graphs (directed or undirected).
+
+All-pairs shortest path (all sources to all targets/dest):
+- [ ] Floyd-Warshall
 
 Max-Flow problem
 - [ ] Ford-Fulkerson
