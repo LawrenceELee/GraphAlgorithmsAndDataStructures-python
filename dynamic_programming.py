@@ -160,7 +160,7 @@ def test_fib_iter():
     print("fib_iter(20) =", fib_iter(20))   #should equal 6765
     print("now, can even quickly calculate fib_iter(100) =", fib_iter(100))
     #should be 354224848179261915075
-    #print("fib_iter(100) time:", timeit.timeit("fib_iter(100)", setup="from __main__ import fib_iter")) #really slow when timed, don't know why.
+    print("fib_iter(100) time: about 55 seconds.") #really slow when timed, don't know why.
         
 
 
@@ -171,6 +171,7 @@ def test_fib_iter():
 
 
 
+from math import sqrt, floor
 def fib_formula(N):
     '''
     There is a closed-form formula to calculate the fib nums.
@@ -181,9 +182,27 @@ def fib_formula(N):
 
     fib(N) = (phi^N - pho^N) / (phi - pho) = (phi^N - pho^N)/sqrt(5),
     where phi = (1 + sqrt(5))/2 and pho = (1 - sqrt(5))/2 = 1 - phi
+    phi is also known as the "golden ratio".
 
     '''
-    pass
+    sqrt5 = sqrt(5)         #store as var so don't have to recalc everytime.
+    phi = (1 + sqrt5)/2
+    pho = (1 - sqrt5)/2
+    return int((phi**N - pho**N) / sqrt5)   #trucate the portion after decimal.
+def test_fib_formula():
+    print("\nrunning test_fib_formula...")
+    print("fib_formula(0) =", fib_formula(0))
+    print("fib_formula(1) =", fib_formula(1))
+    print("fib_formula(2) =", fib_formula(2))       #should equal 1
+    print("fib_formula(3) =", fib_formula(3))       #should equal 2
+    print("fib_formula(4) =", fib_formula(4))       #should equal 3
+    print("fib_formula(10) =", fib_formula(10)) #should equal 55
+    print("fib_formula(15) =", fib_formula(15)) #should equal 610
+    print("fib_formula(20) =", fib_formula(20)) #should equal 6765
+    print("ans starting to get imprecise ... fib_formula(100) =", fib_formula(100)) #should be 354224848179261915075
+    print("fib_formula(100) time:", timeit.timeit("fib_formula(100)", setup="from __main__ import fib_formula"))
+        
+
 
 def test_fib():
     '''
@@ -212,12 +231,25 @@ def test_fib():
     now, can even quickly calculate fib_iter(100) = 354224848179261915075
     fib_iter(100) time: 53.15003991127014
 
+    running test_fib_formula...
+    fib_formula(0) = 0
+    fib_formula(1) = 1
+    fib_formula(2) = 1
+    fib_formula(3) = 2
+    fib_formula(4) = 3
+    fib_formula(10) = 55
+    fib_formula(15) = 610
+    fib_formula(20) = 6765
+    ans starting to get imprecise ... fib_formula(100) = 354224848179263111168
+    fib_formula(100) time: 3.1901819705963135
+
     Why is fib_iter so much slower than fib_memo? Why does it compute
     fib_iter(100) so quickly, but really slowly when timed?
     '''
     test_fib_naive()
     test_fib_memo()
     test_fib_iter()
+    test_fib_formula()
 
 
 if __name__ == '__main__':
